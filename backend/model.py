@@ -6,7 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
-# --- 1. The PyTorch Brain (Same as before) ---
+# --- 1. The PyTorch Brain ---
 class LiveNeuralNet(nn.Module):
     def __init__(self):
         super(LiveNeuralNet, self).__init__()
@@ -29,10 +29,10 @@ class LiveNeuralNet(nn.Module):
         self.optimizer.step()
         return loss.item(), torch.argmax(predictions[-1]).item()
 
-# --- 2. NEW: The Arena Manager ---
+# --- 2. The Arena Manager ---
 class ModelArena:
     def __init__(self):
-        self.memory = [] # The shared notebook!
+        self.memory = [] 
         self.active_name = "pytorch"
         
         # Load up all our contestants
@@ -102,4 +102,4 @@ class ModelArena:
 
     def reset(self):
         self.memory = []
-        self.pytorch_model = LiveNeuralNet() # Reset PyTorch weights
+        self.pytorch_model = LiveNeuralNet() 

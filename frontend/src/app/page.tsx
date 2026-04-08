@@ -20,6 +20,7 @@ export default function LiveNeuralLandscape() {
   // 0=Red, 1=Green, 2=Blue, 3=Yellow
   const [activeColor, setActiveColor] = useState<0 | 1 | 2 | 3>(0); 
   const [activeBrain, setActiveBrain] = useState<string>("pytorch");
+
   // References for drawing
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -41,10 +42,10 @@ export default function LiveNeuralLandscape() {
   // Draw the boundary and dots
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return; // FIXED: Only check canvas here
+    if (!canvas) return; 
     
     const ctx = canvas.getContext("2d");
-    if (!ctx) return; // FIXED: Check ctx after defining it
+    if (!ctx) return; 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -101,7 +102,7 @@ export default function LiveNeuralLandscape() {
         body: JSON.stringify({
           x: xNormalized,
           y: yNormalized,
-          label: activeColor, // FIXED: Now dynamically sends 0, 1, 2, or 3
+          label: activeColor,
         }),
       });
     } catch (error) {

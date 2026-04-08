@@ -47,7 +47,7 @@ manager = ConnectionManager()
 class ClickData(BaseModel):
     x: float
     y: float
-    label: float  # 1.0 for Red, 0.0 for Green
+    label: float 
 
 class SwitchData(BaseModel):
     model_name: str  # "pytorch", "tree", "svm", or "knn"
@@ -84,7 +84,6 @@ async def register_click(data: ClickData):
     # 1. Safely train the model inside the lock
     async with training_lock:
         loss, accuracy = ai_model.train_single_point(data.x, data.y, data.label)
-        # NEW: Generate the decision boundary map after training
         boundary_grid = ai_model.get_decision_boundary()
         
     # 2. Save the event to MongoDB
@@ -95,7 +94,7 @@ async def register_click(data: ClickData):
         "type": "update",
         "point": {"x": data.x, "y": data.y, "label": data.label},
         "metrics": {"loss": loss, "accuracy": accuracy},
-        "boundary": boundary_grid # NEW: Send the background map to the frontend!
+        "boundary": boundary_grid
     }
     
     # 4. Broadcast the new point and the model's new scores to everyone
@@ -137,7 +136,7 @@ async def reset_board():
     
     # 1. Reset the Arena memory safely
     async with training_lock:
-        ai_model.reset() # FIXED: This matches the new ModelArena class!
+        ai_model.reset()
         
     # 2. Broadcast a "reset" command to all connected browsers
     await manager.broadcast({"type": "reset"})

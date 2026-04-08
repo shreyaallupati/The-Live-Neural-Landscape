@@ -20,7 +20,7 @@ export function useWebSocket(url: string) {
     
     // A ref to hold the actual connection so it doesn't reconnect on every render
     const ws = useRef<WebSocket | null>(null);
-    // NEW: Fetch historical data when the hook first mounts
+    
     // Fetch historical data when the hook first mounts
     useEffect(() => {
         fetch("http://127.0.0.1:8000/history")
