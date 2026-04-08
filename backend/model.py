@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+import io
 
 # --- 1. The PyTorch Brain ---
 class LiveNeuralNet(nn.Module):
@@ -103,3 +104,17 @@ class ModelArena:
     def reset(self):
         self.memory = []
         self.pytorch_model = LiveNeuralNet() 
+    
+    def get_pytorch_state_bytes(self):
+        """Converts the PyTorch state_dict into raw binary bytes for MongoDB."""
+        buffer = io.BytesIO()
+        # Save the weights into the memory buffer
+        torch.save(self.pytorch_model.state_dict(), buffer)
+        return buffer.getvalue()
+
+    def load_pytorch_state_bytes(self, state_bytes):
+        """Loads raw binary bytes back into the PyTorch model."""
+        buffer = io.BytesIO(state_bytes)
+        # Load the weights from the buffer
+        state_dict = torch.load(buffer)
+        self.pytorch_model.load_state_dict(state_dict)

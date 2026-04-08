@@ -1,5 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import datetime
+from bson.binary import Binary
+import io
 
 import os
 from dotenv import load_dotenv
@@ -9,10 +11,9 @@ MONGO_DETAILS = os.getenv("MONGO_DETAILS")
 
 # Initialize the client
 client = AsyncIOMotorClient(MONGO_DETAILS)
-
-# Create/Connect to the database and collection
 database = client.live_neural_landscape
 clicks_collection = database.get_collection("clicks")
+checkpoints_collection = database.get_collection("model_checkpoints")
 
 async def save_click_event(x: float, y: float, label: float, loss: float, accuracy: float):
     """
@@ -44,3 +45,23 @@ async def get_all_clicks():
 async def clear_all_clicks():
     """Deletes all training data from MongoDB."""
     await clicks_collection.delete_many({})
+
+async def save_pytorch_checkpoint(model_bytes: bytes, total_points: int):
+    """Saves a binary snapshot of the PyTorch weights."""
+    document = {
+        "weights": Binary(model_bytes),
+        "total_points": total_points,
+        "timestamp": datetime.datetime.utcnow()
+    }
+    await checkpoints_collection.insert_one(document)
+    print(f"💾 Snapshot saved! Model memory size: {total_points} points.")
+
+async def get_latest_checkpoint():
+    """Fetches the most recent model weights from MongoDB."""
+    # Sort by timestamp descending (-1) and grab the first one
+    cursor = checkpoints_collection.find().sort("timestamp", -1).limit(1)
+    checkpoints = await cursor.to_list(length=1)
+    
+    if checkpoints:
+        return checkpoints[0]["weights"]
+    return None

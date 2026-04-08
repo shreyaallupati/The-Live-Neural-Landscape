@@ -1,13 +1,31 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 import asyncio
-
-# Import the brain we just built!
+from contextlib import asynccontextmanager
 from model import LiveNeuralNet
-from database import save_click_event, get_all_clicks, clear_all_clicks
+from database import save_click_event, get_all_clicks, clear_all_clicks, save_pytorch_checkpoint, get_latest_checkpoint
 from model import ModelArena
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # This runs ONCE when the server starts up
+    print("🚀 Server booting up. Checking for model checkpoints...")
+    latest_weights = await get_latest_checkpoint()
+    
+    if latest_weights:
+        # We found a brain! Let's load it.
+        ai_model.load_pytorch_state_bytes(latest_weights)
+        print("✅ Successfully loaded previous PyTorch checkpoint from MongoDB!")
+    else:
+        print("🧠 No checkpoints found. Starting with a fresh PyTorch brain.")
+        
+    yield 
+    # This runs ONCE when the server is shutting down
+    print("🛑 Server is shutting down. Goodbye!")
+
+app = FastAPI(lifespan=lifespan)
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -53,7 +71,7 @@ class SwitchData(BaseModel):
     model_name: str  # "pytorch", "tree", "svm", or "knn"
 
 
-# 4. The Concurrency Lock (One of your Mastery Milestones!)
+# 4. The Concurrency Lock 
 # Because we have multiple users, two people might click at the exact same millisecond.
 # PyTorch will crash if two threads try to update the math weights simultaneously.
 # This lock forces the server to process clicks one at a time, in a rapid queue.
@@ -85,6 +103,12 @@ async def register_click(data: ClickData):
     async with training_lock:
         loss, accuracy = ai_model.train_single_point(data.x, data.y, data.label)
         boundary_grid = ai_model.get_decision_boundary()
+
+        # Every 50 points, we save the brain to MongoDB.
+        current_memory_size = len(ai_model.memory)
+        if current_memory_size > 0 and current_memory_size % 50 == 0:
+            weight_bytes = ai_model.get_pytorch_state_bytes()
+            asyncio.create_task(save_pytorch_checkpoint(weight_bytes, current_memory_size))
         
     # 2. Save the event to MongoDB
     await save_click_event(data.x, data.y, data.label, loss, accuracy)
