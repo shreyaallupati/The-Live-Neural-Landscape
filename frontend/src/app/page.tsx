@@ -13,9 +13,11 @@ import {
 } from "recharts";
 import { Brain, Target, Activity } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function LiveNeuralLandscape() {
   // Connect to our FastAPI WebSocket
-  const { points, metrics, boundary } = useWebSocket("ws://127.0.0.1:8000/ws");
+  const { points, metrics, boundary } = useWebSocket(`${API_URL}/ws`);
   
   // 0=Red, 1=Green, 2=Blue, 3=Yellow
   const [activeColor, setActiveColor] = useState<0 | 1 | 2 | 3>(0); 
@@ -96,7 +98,7 @@ export default function LiveNeuralLandscape() {
 
     // Send the POST request to the FastAPI server
     try {
-      await fetch("http://127.0.0.1:8000/click", {
+      await fetch(`${API_URL}/click`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +114,7 @@ export default function LiveNeuralLandscape() {
 
   const handleResetClick = async () => {
     try {
-      await fetch("http://127.0.0.1:8000/reset", { method: "POST" });
+      await fetch(`${API_URL}/reset`, { method: "POST" });
     } catch (error) {
       console.error("Failed to trigger reset:", error);
     }
@@ -122,7 +124,7 @@ export default function LiveNeuralLandscape() {
     const newBrain = e.target.value;
     setActiveBrain(newBrain);
     try {
-      await fetch("http://127.0.0.1:8000/switch", {
+      await fetch(`${API_URL}/switch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model_name: newBrain }),

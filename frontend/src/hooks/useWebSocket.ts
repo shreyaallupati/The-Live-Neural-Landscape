@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 // Define the shape of our data based on the Python backend
 export interface Point {
     x: number;
@@ -23,7 +25,7 @@ export function useWebSocket(url: string) {
     
     // Fetch historical data when the hook first mounts
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/history")
+        fetch(`${API_URL}/history`)
         .then((res) => res.json())
         .then((data) => {
             if (data.points) setPoints(data.points);
