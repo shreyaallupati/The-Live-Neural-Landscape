@@ -1,0 +1,14 @@
+# FastAPI and Server
+fastapi
+uvicorn
+websockets
+pydantic
+
+# Database and Environment
+motor
+python-dotenv
+
+# Machine Learning and Data Processing
+torch
+numpy
+scikit-learn
