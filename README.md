@@ -1,4 +1,3 @@
-```markdown
 # The Live Neural Landscape 🧠⚡
 
 An interactive, real-time multiplayer Machine Learning playground. 
@@ -78,5 +77,3 @@ npm run dev
 ### 4. Play!
 Open your browser and navigate to `http://localhost:3000`. 
 Open a second tab to see the multiplayer WebSockets in action!
-```
-
