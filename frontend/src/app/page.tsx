@@ -17,7 +17,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function LiveNeuralLandscape() {
   // Connect to our FastAPI WebSocket
+<<<<<<< HEAD
   const { points, metrics, boundary } = useWebSocket(`${API_URL}/ws`);
+=======
+  const { points, metrics, boundary } = useWebSocket(`${process.env.API_URL}/ws`);
+>>>>>>> a920c5f17e8e09ae1b08fe546adb586971bfb006
   
   // 0=Red, 1=Green, 2=Blue, 3=Yellow
   const [activeColor, setActiveColor] = useState<0 | 1 | 2 | 3>(0); 
@@ -98,7 +102,11 @@ export default function LiveNeuralLandscape() {
 
     // Send the POST request to the FastAPI server
     try {
+<<<<<<< HEAD
       await fetch(`${API_URL}/click`, {
+=======
+      await fetch(`${process.env.API_URL}/click`, {
+>>>>>>> a920c5f17e8e09ae1b08fe546adb586971bfb006
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -114,7 +122,11 @@ export default function LiveNeuralLandscape() {
 
   const handleResetClick = async () => {
     try {
+<<<<<<< HEAD
       await fetch(`${API_URL}/reset`, { method: "POST" });
+=======
+      await fetch(`${process.env.API_URL}/reset`, { method: "POST" });
+>>>>>>> a920c5f17e8e09ae1b08fe546adb586971bfb006
     } catch (error) {
       console.error("Failed to trigger reset:", error);
     }
@@ -124,7 +136,11 @@ export default function LiveNeuralLandscape() {
     const newBrain = e.target.value;
     setActiveBrain(newBrain);
     try {
+<<<<<<< HEAD
       await fetch(`${API_URL}/switch`, {
+=======
+      await fetch(`${process.env.API_URL}/switch`, {
+>>>>>>> a920c5f17e8e09ae1b08fe546adb586971bfb006
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model_name: newBrain }),

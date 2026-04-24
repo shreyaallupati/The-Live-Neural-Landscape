@@ -25,7 +25,11 @@ export function useWebSocket(url: string) {
     
     // Fetch historical data when the hook first mounts
     useEffect(() => {
+<<<<<<< HEAD
         fetch(`${API_URL}/history`)
+=======
+        fetch(`${process.env.API_URL}/history`)
+>>>>>>> a920c5f17e8e09ae1b08fe546adb586971bfb006
         .then((res) => res.json())
         .then((data) => {
             if (data.points) setPoints(data.points);
