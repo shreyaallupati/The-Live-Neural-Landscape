@@ -31,7 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    "https://the-live-neural-landscape.vercel.app",  # production (no trailing slash)
+    allow_origins=["https://the-live-neural-landscape.vercel.app",  # production (no trailing slash)
         "http://localhost:3000",                     # local Next.js
         "http://127.0.0.1:3000",                     # also useful for local
     ]
